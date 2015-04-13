@@ -193,7 +193,7 @@ bool bTreeNode::find(string key, string *value){
   
   //If the key at the current position is the one you're looking for,
   //then set the value pointer, and return true.
-  if (!keys[i].compare(key) && i != keySize){
+  if (i != keySize && !keys[i].compare(key)){
     *value = values[i];
 	return true;
   }
@@ -254,20 +254,20 @@ void bTreeNode::insert(string key, string value){
 void bTreeNode::split(int i, bTreeNode *x){
   //Create a new node to hold the the appropriate amount of keys/values.
   bTreeNode *y = new bTreeNode(x->size, x->minDegree, x->isLeaf);
-  y->keySize = (x->minDegree - 1);
+  y->keySize = (minDegree) - 1;
   
   //This for loop copies the last (minimum degree - 1) amount of keys/values of x to y.
-  for (int j = 0; j < (x->minDegree - 1); j++){
-    y->keys[j] = x->keys[j + (x->minDegree)];
-	y->values[j] = x->values[j + (x->minDegree)];
+  for (int j = 0; j < (minDegree - 1); j++){
+    y->keys[j] = x->keys[j + (minDegree)];
+	y->values[j] = x->values[j + (minDegree)];
   }
   //If x isn't a leaf, then the last minimum degree (-1) amount of children are also copied.
   if(x->isLeaf == false){
-    for (int j = 0; j < (x->minDegree); j++){
-	  y->children[j] = x->children[j+(x->minDegree)];
+    for (int j = 0; j < (minDegree); j++){
+	  y->children[j] = x->children[j+(minDegree)];
     }
   }
-  x->keySize = (x->minDegree - 1);
+  x->keySize = (minDegree - 1);
   
   //Since this (the parent node) is getting a new child, space is made for it.
   for (int j = keySize; j >= (i + 1); j--){
@@ -283,8 +283,8 @@ void bTreeNode::split(int i, bTreeNode *x){
 	values[j+1] = values[j];
   }
   //Places the currently last key/value of x into this spot.
-  keys[i] = x->keys[x->minDegree-1];
-  values[i] = x->values[x->minDegree-1];
+  keys[i] = x->keys[minDegree-1];
+  values[i] = x->values[minDegree-1];
   
   //The amount of keys/values in this node is incremented.
   keySize = keySize + 1;
@@ -293,7 +293,7 @@ void bTreeNode::split(int i, bTreeNode *x){
 //Removes a key in subtree rooted at this node.
 bool bTreeNode::delete_key(string key){
   //This bool keeps track of whether or not the key has been deleted.
-  bool deleted = false;
+  bool deleted;
   
   int i = 0;
   //This while loop gets to the index of the first key greater than or equal to the given key.
@@ -310,7 +310,7 @@ bool bTreeNode::delete_key(string key){
 	if(isLeaf){
 	  //All the keys/values after index position i are moved back one,
 	  //deleting the key/value and moving the rest to the correct location.
-	  for (int j = i+1; j < keySize; j++){
+	  for (int j = i+1; j < keySize; ++j){
 	    keys[j-1] = keys[j];
 		values[j-1] = values[j];
 	  }
@@ -390,6 +390,7 @@ void bTreeNode::deleteNonLeaf(int i){
 	//recursively delete the key.
 	children[i]->delete_key(key);
   }
+  return;
 }
 
 //A helper method for delete_key which finds the previous key in order,
