@@ -18,6 +18,7 @@ bTree::bTree(int n){
   if (size%2 == 0){
     minDegree = size/2;
   }
+  //Else if the number is odd, find the floor.
   else{
     minDegree = (size-1)/2;
   }
@@ -293,19 +294,16 @@ void bTreeNode::split(int i, bTreeNode *x){
 //Removes a key in subtree rooted at this node.
 bool bTreeNode::delete_key(string key){
   //This bool keeps track of whether or not the key has been deleted.
-  bool deleted;
+  bool deleted = false;
   
   int i = 0;
   //This while loop gets to the index of the first key greater than or equal to the given key.
   while (i < keySize && keys[i] < key){
-    ++i;
+    i++;
   }
   
   //If the key is in this node
   if(i < keySize && !keys[i].compare(key)){
-    //Then deleted will be true.
-	deleted = true;
-	
     //If this node is a leaf
 	if(isLeaf){
 	  //All the keys/values after index position i are moved back one,
@@ -321,6 +319,8 @@ bool bTreeNode::delete_key(string key){
 	else{
       deleteNonLeaf(i);
 	}
+	//Then deleted will be true.
+	deleted = true;
   }
   //Else if the key isn't in this node
   else{
@@ -331,12 +331,9 @@ bool bTreeNode::delete_key(string key){
 	
 	//The key might be in the subtree at this node.
 	//This bool checks if the key would be in the last child or not.
-	bool isLast;
+	bool isLast = false;
 	if (i == keySize){
 	  isLast = true;
-	}
-	else{
-	  isLast = false;
 	}
 	
 	//If the child has less than minimum degree amount of keys, then it is filled.
@@ -510,7 +507,7 @@ void bTreeNode::takeFromNext(int i){
   
   //If the child isn't a leaf, the next child's first child becomes the last child of the child.
   if (child->isLeaf == false){
-    child->children[child->keySize + 1] = nextChild->children[0];
+    child->children[(child->keySize) + 1] = nextChild->children[0];
   }
   
   //The first key/value of the next child is inserted into the current node at i.
@@ -542,11 +539,11 @@ void bTreeNode::merge(int i){
   
   //Takes a key/value from the current node and puts it into
   //the minimum degree minus 1 position in the child.
-  child->keys[(minDegree)-1] = keys[i];
-  child->values[(minDegree)-1] = values[i];
+  child->keys[minDegree-1] = keys[i];
+  child->values[minDegree-1] = values[i];
   
   //Copies the keys/values from the next child to the child.
-  for (int j = 0; j <= nextChild->keySize; j++){
+  for (int j = 0; j < nextChild->keySize; j++){
     child->keys[j + (minDegree)] = nextChild->keys[j];
 	child->values[j + (minDegree)] = nextChild->values[j];
   }
