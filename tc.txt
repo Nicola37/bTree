@@ -1,4 +1,4 @@
-3
+5
 0
 Go
 Gators
@@ -38,4 +38,10 @@ Boat
 1
 Delta
 3
+2
+Epsilon
+2
+Beta
+2
+Car
 4

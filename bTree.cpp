@@ -14,8 +14,13 @@
 bTree::bTree(int n){
   //The size of the nodes, as given by the user, is set here.
   size = n;
-  //Sees if the size is odd or even, and sets the minimum degree accordingly.
-  if (size%2 == 0){
+  //Sees if the size is too odd or even, and sets the minimum degree accordingly.
+  //However if the size is too small, since the minimum degree has to be at least 2,
+  //it is set to 2.
+  if (size <= 3){
+    minDegree = 2;
+  }
+  else if(size%2 == 0){
     minDegree = size/2;
   }
   //Else if the number is odd, find the floor.
@@ -32,7 +37,7 @@ bTree::~bTree(){
   delete root;
 }
 
-//Inserts a given key-value pair.
+//Inserts a given key/value pair.
 void bTree::insert(string key, string value){
   //If the tree is empty.
   if (root == NULL){
@@ -41,7 +46,7 @@ void bTree::insert(string key, string value){
 	//Insert key and value.
 	root->keys[0] = key;
 	root->values[0] = value;
-	//The node now has one key-value pair.
+	//The node now has one key/value pair.
 	root->keySize = 1;
   }
   //If the tree is not empty.
@@ -75,6 +80,7 @@ void bTree::insert(string key, string value){
 
 //Searches for the given key, 
 //and has the given pointer point to the correct value if the key is found.
+//Returns true if the key is found, false if not.
 bool bTree::find(string key, string *value){
   //If the tree is empty, return false.
   if (root == NULL){
@@ -121,11 +127,12 @@ bool bTree::delete_key(string key){
   return deleted;
 }
 
+//Returns the keys of the bTree in alphabetical order.
 string bTree::toStr(){
   //Create a stringstream to store the key strings.
   stringstream info;
   
-  //If the bTree is empty, then return nothing other than a new line.
+  //If the bTree is empty, then return nothing.
   if (root == NULL){
     return "";
   }
@@ -146,9 +153,16 @@ bTreeNode::bTreeNode(int n, int m, bool l){
   
   //Creates the arrays to store the keys, values, 
   //and pointers to the children of this node.
-  keys = new string[(2*minDegree)-1];
-  values = new string[(2*minDegree)-1];
-  children = new bTreeNode *[2*minDegree];
+  if (size % 2){
+    keys = new string[(2*minDegree)-1];
+    values = new string[(2*minDegree)-1];
+    children = new bTreeNode *[2*minDegree];
+  }
+  else{
+    keys = new string[(2*minDegree)];
+    values = new string[(2*minDegree)];
+    children = new bTreeNode *[(2*minDegree) + 1];
+  }
   
   //Initially, there are 0 keys in the node.
   keySize = 0;
@@ -291,7 +305,7 @@ void bTreeNode::split(int i, bTreeNode *x){
   keySize = keySize + 1;
 }
 
-//Removes a key in subtree rooted at this node.
+//Removes a key/value in subtree rooted at this node.
 bool bTreeNode::delete_key(string key){
   //This bool keeps track of whether or not the key has been deleted.
   bool deleted = false;
